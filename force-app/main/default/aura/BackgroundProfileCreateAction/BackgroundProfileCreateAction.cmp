@@ -1,0 +1,733 @@
+<aura:component description="BackgroundProfileCreateAction" implements="forceCommunity:availableForAllPageTypes"
+                controller="BackgroundProfileQuestionnaireController"
+                access="global">
+
+    <aura:method name="fieldChangeHandler" access="public" action="{!c.onChangeFieldHandler}">
+        <aura:attribute name="apiNameField" type="String" required="true"/>
+        <aura:attribute name="values" type="String" required="true"/>
+    </aura:method>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute type="Integer" name="numberOfBankDetails" default="1"/>
+    <aura:attribute type="Boolean" name="displayHowAreYouAdditionalFields" default="false"/>
+    <aura:attribute type="Boolean" name="displayHowDidYouHearAboutDbsAdditionalField" default="false"/>
+    <aura:attribute type="Boolean" name="displayCounsellingServicesAdditionalField" default="false"/>
+    <aura:attribute type="Boolean" name="displayRecruitmentAndCounsellingProcedureAdditionalField" default="false"/>
+    <aura:attribute type="String" name="howIsVisaCounsellingDeliveredValue"/>
+    <aura:attribute type="Boolean" name="displayCompanySuspensionAdditionalField" default="false"/>
+    <aura:attribute type="Boolean" name="displayProvideFinancialCompensationAdditionalField" default="false"/>
+    <aura:attribute type="Boolean" name="displayGovernmentOfficialFamilyRelationsAdditionalField" default="false"/>
+    <aura:attribute type="Boolean" name="displayGovernmentOfficialAdditionalField" default="false"/>
+    <aura:attribute type="Boolean" name="displayPlanToInteractEntitiesOfficeAdditionalField" default="false"/>
+    <aura:attribute type="Boolean" name="displayInteractionEntitiesOfficialsAdditionalField" default="false"/>
+    <aura:attribute type="Boolean" name="displayOwnedPartlyOwnedChangeAdditionalField" default="false"/>
+    <aura:attribute type="Boolean" name="displayDoYouHaveAnyBranchOfficesAdditionalField" default="false"/>
+    <aura:attribute type="Boolean" name="displayDoYouHaveAnyBranchOfficesInOtherCountriesAdditionalField"
+                    default="false"/>
+    <aura:attribute type="Boolean" name="displayOtherBusinessPartnersAdditionalField" default="false"/>
+    <aura:attribute type="Boolean" name="displayOtherKaplanDivisionsAdditionalField" default="false"/>
+    <aura:attribute type="String" name="displayPersonalBankDetailsSection1"/>
+    <aura:attribute type="String" name="displayPersonalBankDetailsSection2"/>
+    <aura:attribute type="String" name="displayPersonalBankDetailsSection3"/>
+    <aura:attribute type="Boolean" name="disableSubmitButton" default="true"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="false"/>
+    <aura:attribute name="isSuccess" type="Boolean" default="false"/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="backgroundProfileId" type="String"/>
+    <aura:attribute name="message" type="String"/>
+    <aura:attribute type="Boolean" name="displayOtherRecipentOfEmail" default="false"/>
+    <aura:attribute type="String" name="DirectorOwnerLegal" default=""/>
+    <aura:attribute type="String" name="buissnessType" default=""/>
+
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner variant="brand"/>
+    </aura:if>
+
+    <aura:if isTrue="{!and(!v.isSuccess, !v.isError)}">
+        <lightning:recordEditForm aura:id="backgroundProfileForm" objectApiName="Background_Profile__c"
+                                  onsubmit="{!c.handleSubmit}"
+                                  onerror="{!c.handleError}"
+                                  onsuccess="{!c.handleSuccess}">
+
+            <lightning:layout multipleRows="true">
+                <lightning:layoutItem size="12">
+                    <div class="slds-text-heading_large">To help us with your application, please give as much
+                        information as possible in the fields below. Your information will not be shared with any third
+                        parties and will be kept confidential.
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <lightning:layoutItem size="12" class="slds-m-around_large">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_large">Main Contact Details</div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Company_Trading_Name__c"
+                                                           labelField="1. Company Trading/Branding Name"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Company_Legal_Name__c"
+                                                           labelField="2. Company Legal/Registered Name"
+                                                           isRequired="true" showHelpText="true"
+                                                           displayHelpTextAsStaticText="true"
+                                                           helpTextManyLines="['*If you are a sole proprietor, please provide your name NOT your business trading name']"/>
+                    <lightning:layoutItem size="12">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">3. Company registered address</label>
+                            <div class="slds-form-element__control">
+                                <c:BackgroundProfileCreateActionFields
+                                        apiNameField="X3_1_Company_Registered_Address_line_1__c"
+                                        labelField="Address (line 1)" isRequired="true"/>
+                                <c:BackgroundProfileCreateActionFields
+                                        apiNameField="X3_2_Company_Registered_Address_line_2__c"
+                                        labelField="Address (line 2)"/>
+                                <c:BackgroundProfileCreateActionFields
+                                        apiNameField="X3_3_Company_Registered_Address_City__c" labelField="City"
+                                        isRequired="true"/>
+                                <c:BackgroundProfileCreateActionFields
+                                        apiNameField="X3_4_Company_Registered_Address_PostCode__c"
+                                        labelField="Postal Code" isRequired="true"/>
+                                <c:BackgroundProfileCreateActionFields
+                                        apiNameField="X3_5_Company_Registered_Address_Country__c" labelField="Country"
+                                        isRequired="true"/>
+                            </div>
+                        </div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Main_Contact_Email__c"
+                                                           labelField="4. Company email address" isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Main_Contact_Phone__c"
+                                                           labelField="5. Company phone number" isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Company_Website__c"
+                                                           labelField="6. Company website" isRequired="true"/>
+                </lightning:layout>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" class="slds-m-around_large">
+                <lightning:layout multipleRows="true">
+                </lightning:layout>
+                <lightning:layoutItem size="12">
+                    <div class="slds-text-heading_large">Company Profile</div>
+                </lightning:layoutItem>
+                <c:BackgroundProfileCreateActionFields apiNameField="Where_is_company_registered__c"
+                                                       labelField="7. Which country is the company registered?"
+                                                       isRequired="true"/>
+                <lightning:layoutItem size="12">
+                    <c:FormFileUploader aura:id="fileUploaderId" label="Business Registration Document"
+                                        multipleFiles="true" showHelpText="true" displayHelpTextAsStaticText="true"
+                                        helpTextManyLines="['Please provide a copy of your official business registration (business licence for China) document separately',
+                  '- If it is not in English, please kindly provide an English translation as well.',
+                  '- If you are a sole proprietor, please provide proof of sole proprietorship. (e.g. tax document, self-employment certificate...etc.)']"/>
+                </lightning:layoutItem>
+                <c:BackgroundProfileCreateActionFields aura:id="sectionFields"
+                                                       apiNameField="Company_Registration_Number__c"
+                                                       labelField="8. Registration Number (If applicable)"/>
+                <c:BackgroundProfileCreateActionFields apiNameField="Date_Business_was_established__c"
+                                                       labelField="9. Date Business was established" isRequired="true"/>
+                <c:BackgroundProfileCreateActionFields apiNameField="Principle_Line_of_Business__c"
+                                                       labelField="10. Principle line of business" isRequired="true"/>
+                <c:BackgroundProfileCreateActionFields apiNameField="Type_of_Business__c"
+                                                       labelField="11. Type of Business (e.g. Sole Proprietorship, Partnership, Corporation/Ltd. company...etc.)"
+                                                       showHelpText="true"
+                                                       isRequired="true" parent="{!this}" displayHelpTextAsStaticText="true" helpTextManyLines="['*A sole proprietorship is',
+                  '- a type of enterprise owned and run by one person and in which there is no legal distinction between the owner and the business entity.',
+                  '- an unincorporated business that has just one owner who pays personal income tax on profits earned from the business.',
+                  '- the business owner has unlimited liability – i.e. the business owner is personally liable for all the debts and losses of the business.',
+                  'Please choose ‘Sole Proprietorship’ ONLY IF the explanation above is applicable to your business']"/>
+                <c:BackgroundProfileCreateActionFields apiNameField="Nature_and_History_of_the_Business__c"
+                                                       isRequired="true"
+                                                       labelField="12. Describe briefly the nature and history of your business"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" class="slds-m-around_large">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_large">Director/Owner/Legal Representative Profile</div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Are_you_Dir_Owner_Legal_Rep_None__c"
+                                                           labelField="13. Are you" isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayHowAreYouAdditionalFields}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="Your_Position_at_Company__c"
+                                                               labelField="13-1. Current Position at company"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Your_title__c"
+                                                               labelField="13-2. Title (e.g. Mr, Ms...etc.)"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Your_First_Name__c"
+                                                               labelField="13-3. First Name" isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Your_Last_Name__c"
+                                                               labelField="13-4. Last Name"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Your_Contact_Email_Address__c"
+                                                               labelField="13-5. Contact Email Address"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="X13_6_Your_Contact_Mobile_Phone_Number__c"
+                                                               labelField="13-6. Contact Mobile Phone Number"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Whose_information_will_you_provide__c"
+                                                               labelField="13-7. We need the director or owner or legal representative’s information to send the agreement (contract). Whose information will you provide below?"
+                                                               isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Director_Owner_Legal_Rep_Title__c"
+                                                           labelField="14. Director/Owner/Legal Representative Title"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Director_Owner_Legal_Rep_First_Name__c"
+                                                           labelField="15. Director/Owner/Legal Representative First And Middle Name (as it appears in the passport)"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Director_Owner_Legal_Rep_Last_Name__c"
+                                                           labelField="16. Director/Owner/Legal Representative Last Name (as it appears in the passport)"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Director_Owner_Legal_Nationality__c"
+                                                           labelField="17. Director/Owner/Legal Representative Nationality)"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Director_Owner_Legal_Local_Name__c"
+                                                           labelField="18. Director/Owner/Legal Representative Local Name (If applicable)"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Director_Owner_Legal_Date_of_Birth__c"
+                                                           labelField="19. Director/Owner/Legal Representative Date of Birth (DD/MM/YYYY) - required for regular compliance checks"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Director_Owner_Legal_Gender__c"
+                                                           labelField="20. Director/Owner/Legal Representative Gender"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Director_Owner_Legal_Phone_Number__c"
+                                                           labelField="21. Director/Owner/Legal Representative Phone Number"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Director_Owner_Legal_Mobile_Phone_Number__c"
+                                                           labelField="22. Director/Owner/Legal Representative Mobile Phone Number"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Director_Owner_Legal_Email_Address__c"
+                                                           labelField="23. Director/Owner/Legal Representative Email Address (Please provide an email address that is NOT accessible by anyone else)"
+                                                           isRequired="true"/>
+                </lightning:layout>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" class="slds-m-around_large">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_large">Company Profile - Part 2</div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Recruitment_Country_Primary__c"
+                                                           labelField="1. Which country are your students mainly coming from?"
+                                                           isRequired="true" showHelpText="true"
+                                                           helpText="If your students are mainly residing in Switzerland, then the answer above should be Switzerland."/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Other_Recruitment_Country_List__c"
+                                                           labelField="2. Please list any other countries you recruit from."
+                                                           showHelpText="true"
+                                                           helpText="Please note Dublin Business School (DBS) might ask further information for recruitment of Cuba, Iran, North Korea, Sudan and Syria nationals."/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Number_of_Staff_in_Employment__c"
+                                                           labelField="3. Approximately how many staff do you employ in your company?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="X4_Do_you_have_any_branch_offices__c"
+                                                           labelField="4. Do you have any branch offices?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayDoYouHaveAnyBranchOfficesAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="Number_of_Branch_offices__c"
+                                                               labelField="4-1. Approximately how many branch offices do you have?"
+                                                               isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Main_Office_Location__c"
+                                                           labelField="5. Please state which country your main office (head office) is located."
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="X6_Do_you_have_Branch_Offices_in_any__c"
+                                                           labelField="6. Do you have Branch Offices in any other countries?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayDoYouHaveAnyBranchOfficesInOtherCountriesAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="Branch_Office_Countries_List__c"
+                                                               labelField="6-1. State the list of countries below"
+                                                               isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Other_Business_Partners__c"
+                                                           labelField="7. Do you plan to use any other parties (sub-agents, consultants, venture partners, business associates, etc.) to provide services related to the proposed agreement with Dublin Business School?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayOtherBusinessPartnersAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="Other_Business_Partners_Details__c"
+                                                               labelField="7-1. Identify each other party and detail the role/function it will perform."
+                                                               isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Working_with_other_Kaplan_Divisions__c"
+                                                           labelField="8. Do you work with any other Kaplan divisions (e.g. Kaplan International Pathways, Kaplan International Languages...etc.)?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayOtherKaplanDivisionsAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="Other_Kaplan_divisions_details__c"
+                                                               labelField="8-1. Details"
+                                                               isRequired="true"/>
+                    </aura:if>
+                    <br></br>
+                    <aura:if isTrue="{!v.displayOtherRecipentOfEmail}">
+                        Once you’ve submitted the questionnaire, we will send the summary form via e-mail and this form needs to be signed by 2 people in your company.<br></br>
+						Please provide the details of the staff member who can review this summary form and confirm all is correct and sign. – e.g. An account staff or employee of the company
+                        <br></br>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Your_title_2__c"
+                                                               labelField="9-1 Title (e.g. Mr, Ms...etc.)"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Your_First_Name_2__c"
+                                                               labelField="9-2 First Name" isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Your_Last_Name_2__c"
+                                                               labelField="9-3 Last Name"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Your_Job_Title__c"
+                                                               labelField="9-4 Job Title"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="X9_4_Contact_Email_Address__c"
+                                                               labelField="9-5 Contact Email Address"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="X9_5_Contact_Mobile_Phone_Number__c"
+                                                               labelField="9-6. Contact Mobile Phone Number"
+                                                               isRequired="true"/>
+                    </aura:if>
+
+                </lightning:layout>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" class="slds-m-around_large">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_large">Government Affiliations</div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Owned_Partly_Owned_by_a_Govt_Dept__c"
+                                                           labelField="1. Is your company or school/institution owned or partly owned by a Government Department, ministry or Government Agency?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayOwnedPartlyOwnedChangeAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields
+                                apiNameField="Owned_Partly_Owned_by_a_Govt_Dept_Detail__c"
+                                labelField="1-1. Details"
+                                isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Interaction_w_Govt_Entities_Officials__c"
+                                                           labelField="2. Do you interact with Government entities* or Government officials** on behalf of DBS?"
+                                                           isRequired="true" parent="{!this}" displayHelpTextAsStaticText="true"
+                                                           helpTextManyLines="['* Government departments, Ministries, Government Agencies, Legislatures, Political parties or Government-Owned Companies','** Government Employees, Elected or appointed officials']"
+                                                           showHelpText="true"/>
+
+                    <aura:if isTrue="{!v.displayInteractionEntitiesOfficialsAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="Name_of_Govt_Entities_Officials__c"
+                                                               labelField="2-1. Name(s) of Government entities or officials"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Government_Entities_Officials_Details__c"
+                                                               labelField="2-2. A short description of the work you do with them on behalf of DBS"
+                                                               isRequired="true"/>
+                        <lightning:layoutItem size="12">
+                            <lightning:inputField fieldName=""/>
+                        </lightning:layoutItem>
+                    </aura:if>
+
+                    <c:BackgroundProfileCreateActionFields apiNameField="Plan_to_interact_w_Govt_Entities_Offic__c"
+                                                           labelField="3. Do you plan to interact with *Government entities or **Government officials on behalf of DBS?"
+                                                           isRequired="true" parent="{!this}" displayHelpTextAsStaticText="true"
+                                                           helpTextManyLines="['* Government departments, Ministries, Government Agencies, Legislatures, Political parties or Government-Owned Companies','** Government Employees, Elected or appointed officials']"
+                                                           showHelpText="true"/>
+                    <aura:if isTrue="{!v.displayPlanToInteractEntitiesOfficeAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="Name_of_Government_Entity__c"
+                                                               labelField="3-1. Name(s) of Government entities or officials"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Other_Government_Interactions_Details__c"
+                                                               labelField="3-2. Further details"
+                                                               isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Present_or_Former_Government_Official__c"
+                                                           labelField="4. Is any owner, director, officer or employee of your company either a present or former government official?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayGovernmentOfficialAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="Government_Official_Details__c"
+                                                               labelField="4-1. Details"
+                                                               isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Government_Official_Family_Relations__c"
+                                                           labelField="5. Does any owner, director, officer or employee of your company have any family relationship with any government official?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayGovernmentOfficialFamilyRelationsAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="Govt_Official_Family_Relations_Detai__c"
+                                                               labelField="5-1. Details"
+                                                               isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Provide_Financial_Compensation__c"
+                                                           labelField="6. Do you provide or intend to provide any financial compensation to any government agency or government employee for purposes of your relationship with DBS?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayProvideFinancialCompensationAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="Provide_Financial_Compensation_Details__c"
+                                                               labelField="6-1. Details (short description of the fees or compensation provided)"
+                                                               isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Company_Suspension__c"
+                                                           labelField="7. Has your company, any currently or previously associated organization, or any present or former officer, director, shareholder, or employee of any of such organization been suspended from doing business in any capacity (e.g. by a regulatory authority or public organization) charged with any criminal act or the subject of any allegation of fraud, misrepresentation, bribery or other related activities?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayCompanySuspensionAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="Company_Suspension_Details__c"
+                                                               labelField="7-1. Details"
+                                                               isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Additional_Information__c"
+                                                           labelField="8. Please use this space to add any further comments"/>
+                </lightning:layout>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" class="slds-m-around_large">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_large">Data Protection</div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields
+                            apiNameField="Are_compliant_with_the_applicable_DB__c"
+                            labelField="1. Are you compliant with the applicable Data Protection Laws in your country?"
+                            isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields
+                            apiNameField="Security_Measures_in_Place_to_stop_DB__c"
+                            labelField="2 Do you have appropriate security measures in place to prevent any potential Data Breaches and to protect the data of our students?"
+                            isRequired="true"/>
+                </lightning:layout>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" class="slds-m-around_large">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_large">Recruitment and Counselling</div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields
+                            apiNameField="Counselling_Services__c"
+                            labelField="1. What services do you offer to your students? (Tick as many options as relevant.)"
+                            isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayCounsellingServicesAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields
+                                apiNameField="Recruitment_Services_other__c"
+                                labelField="1-1. Please specify"
+                                isRequired="true"/>
+                    </aura:if>
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-body_regular">Dublin Business School (DBS) must comply with the
+                            immigration laws of all the locations that offer courses. DBS' third parties (agents,
+                            representatives and offices) must demonstrate that all students have the ability and intent
+                            to start and finish their chosen programmes.
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-body_regular">By signing a partnership agreement with DBS, all partners
+                            are enabled to recruit students for any DBS destinations, therefore the relevant immigration
+                            checks are expected to be completed prior to enrolment.
+                        </div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields
+                            apiNameField="Recruitment_and_Counselling_Procedure__c"
+                            labelField="2. Please confirm that you are following procedures below to screen potential students"
+                            isRequired="true" parent="{!this}" displayHelpTextAsStaticText="true" helpTextManyLines="['- Verify that any existing qualifications presented are genuine',
+                '- Consider students level of English before accepting their Applications',
+                '- Request to see proof of the students’ ability to support themselves financially during their course, ie. Bank statements',
+                '- Flag if any of your clients have previously been refused a visa and ensure that all visa applicants are vetted thoroughly and fit the Visa Office profile']"
+                            showHelpText="true"/>
+                    <aura:if isTrue="{!v.displayRecruitmentAndCounsellingProcedureAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields
+                                apiNameField="Recruitment_and_Counselling_Notes__c"
+                                labelField="2-1. Please explain which of the above you are NOT following and the reasons in the space below"
+                                isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields
+                            apiNameField="Student_Contact_Measuring__c"
+                            labelField="3. As part of the immigration requirements, Dublin Business School are also responsible for students’ actions once they have entered their country of study and enrolled on their course. This includes making sure students, among other things, maintain 100% attendance and adhere to their conditions of stay, and tracking students should they withdraw so that we can confirm their whereabouts and actions after withdrawal.Please describe what measures you take to ensure you are in contact with your students once they leave their home country and to keep in contact with them throughout their time in their country of study"
+                            isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields
+                            apiNameField="Other_Screening_Procedures__c"
+                            labelField="4. Please describe any other screening procedures used below"/>
+                    <c:BackgroundProfileCreateActionFields
+                            apiNameField="How_Many_Visa_Refusal_in_the_last_12__c"
+                            labelField="5. How many visa refusals have your students received in the past 12 months? (Please state the overall percentage of refused students in your answer and provide the refusal reasons if it is over 10%.)"
+                            isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields
+                            apiNameField="How_is_Visa_Counselling_delivered__c"
+                            labelField="6. Is VISA COUNSELLING provided internally or do you use an external company to counsel clients on Visas?"
+                            isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.howIsVisaCounsellingDeliveredValue == 'Internally'}">
+                        <c:BackgroundProfileCreateActionFields
+                                apiNameField="Internal_Visa_Training_Given__c"
+                                labelField="6-1. How is VISA TRAINING given to your internal staff so that they can counsel clients on visa issues?"
+                                isRequired="true"/>
+                    </aura:if>
+                    <aura:if isTrue="{!v.howIsVisaCounsellingDeliveredValue == 'Externally'}">
+                        <c:BackgroundProfileCreateActionFields
+                                apiNameField="ExternalCounselling_Training_Provider__c"
+                                labelField="6-2. What is the name of the external visa counselling/training provider?"
+                                isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields
+                            apiNameField="X7Approved_Certification_of_Accreditatio__c"
+                            labelField="7. Please give details of any approved certification or accreditation which your agency has received. (e.g. Approved agency awards, British Council Agent Training)"/>
+                </lightning:layout>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" class="slds-m-around_large">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_large">Bank Details</div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_small">As a registered company, you must provide a Corporate Bank Account registered in the Company Legal Name, if you are requesting a contract with Dublin Business School.</div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Number_of_Bank_Details__c"
+                                                           labelField="How many banks account details would you like to provide?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <p class="slds-p-top_large slds-p-bottom_small slds-text-heading_small">1st Bank Account
+                        Information</p>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_Name__c" labelField="Bank Name"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_Account_Type__c"
+                                                           labelField="Bank Account Type" isRequired="true"
+                                                           parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayPersonalBankDetailsSection1 == 'Personal'}">
+                        <c:BackgroundProfileCreateActionFields
+                                apiNameField="Bank_1_Personal_Bank_Details__c"
+                                labelField="If you cannot provide a Corporate Bank Account, please provide your personal bank details and an explanation as to why you cannot provide a Corporate Bank Account"
+                                isRequired="true"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_Account_Holder_Name__c"
+                                                           labelField="Name of Bank Account Holder"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_Account_Branch_Name__c"
+                                                           labelField="Bank Branch Name" isRequired="true"/>
+                    <lightning:layoutItem size="12">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Bank Address</label>
+                            <div class="slds-form-element__control">
+                                <c:BackgroundProfileCreateActionFields apiNameField="Bank_Address_line_1__c"
+                                                                       labelField="Bank address (line 1)"
+                                                                       isRequired="true"/>
+                                <c:BackgroundProfileCreateActionFields apiNameField="Bank_Address_line_2__c"
+                                                                       labelField="Bank address (line 2)"/>
+                                <c:BackgroundProfileCreateActionFields apiNameField="Bank_City__c"
+                                                                       labelField="Bank City"
+                                                                       isRequired="true"/>
+                                <c:BackgroundProfileCreateActionFields apiNameField="Bank_Postcode__c"
+                                                                       labelField="Bank Postalcode"
+                                                                       isRequired="true"/>
+                                <c:BackgroundProfileCreateActionFields apiNameField="Bank_Country__c"
+                                                                       labelField="Bank Country"
+                                                                       isRequired="true"/>
+                            </div>
+                        </div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_Account_Name__c"
+                                                           labelField="Bank Account Name" isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_Account_Number__c"
+                                                           labelField="Bank Account Number" isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_Sort_Code__c"
+                                                           labelField="Bank Sort Code"
+                                                           isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_Swift_Code__c"
+                                                           labelField="Bank SWIFT Code" isRequired="true"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_IBAN_Code__c"
+                                                           labelField="Bank IBAN Code"
+                                                           isRequired="true"/>
+                    <lightning:layoutItem size="12">
+                        <c:FormFileUploader aura:id="fileUploaderId" label="Bank Statement Document"
+                                            multipleFiles="false" showHelpText="true" displayHelpTextAsStaticText="true"
+                                            helpTextManyLines="['Please upload ONE of the following, preferably Item 1):',
+                  '1) Bank statement DATED within the last 3 months, with masked content where only Bank Account NAME (= Company legal name) and Bank Account NUMBER are shown',
+                  '2) Online bank account snapshot where only Bank Account NAME (= Company legal name) and Bank Account NUMBER are shown',
+                  '3) [For China only – If either 1) or 2) is unavailable] New bank account opening certificate aka “开☐☐可☐” (e.g. Bank opening permit)']"/>
+                    </lightning:layoutItem>
+                    <aura:if isTrue="{!or(v.numberOfBankDetails == '2',v.numberOfBankDetails == '3')}">
+                        <p class="slds-p-top_large slds-p-bottom_small slds-text-heading_small">2nd Bank Account
+                            Information</p>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_Name__c"
+                                                               labelField="Bank Name"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_Account_Type__c"
+                                                               labelField="Bank Account Type"
+                                                               isRequired="true" parent="{!this}"/>
+                        <aura:if isTrue="{!v.displayPersonalBankDetailsSection2 == 'Personal'}">
+                            <c:BackgroundProfileCreateActionFields
+                                    apiNameField="Bank_2_Personal_Bank_Details__c"
+                                    labelField="If you cannot provide a Corporate Bank Account, please provide your personal bank details and an explanation as to why you cannot provide a Corporate Bank Account"
+                                    isRequired="true"/>
+                        </aura:if>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_Account_Holder_Name__c"
+                                                               labelField="Name of Bank Account Holder"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_Account_Branch_Name__c"
+                                                               labelField="Bank Branch Name" isRequired="true"/>
+                        <lightning:layoutItem size="12">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">Bank Address</label>
+                                <div class="slds-form-element__control">
+                                    <c:BackgroundProfileCreateActionFields
+                                            apiNameField="Bank_2_Address_line_1__c"
+                                            labelField="Bank address (line 1)"
+                                            isRequired="true"/>
+                                    <c:BackgroundProfileCreateActionFields
+                                            apiNameField="Bank_2_Address_line_2__c"
+                                            labelField="Bank address (line 2)"/>
+                                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_City__c"
+                                                                           labelField="Bank City"
+                                                                           isRequired="true"/>
+                                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_Postcode__c"
+                                                                           labelField="Bank Postalcode"
+                                                                           isRequired="true"/>
+                                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_Country__c"
+                                                                           labelField="Bank Country"
+                                                                           isRequired="true"/>
+                                </div>
+                            </div>
+                        </lightning:layoutItem>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_Account_Name__c"
+                                                               labelField="Bank Account Name"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_Account_Number__c"
+                                                               labelField="Bank Account Number"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_Sort_Code__c"
+                                                               labelField="Bank Sort Code" isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_Swift_Code__c"
+                                                               labelField="Bank SWIFT Code" isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_2_IBAN_Code__c"
+                                                               labelField="Bank IBAN Code" isRequired="true"/>
+                        <lightning:layoutItem size="12">
+                            <c:FormFileUploader aura:id="fileUploaderId" label="Bank Statement Document "
+                                                multipleFiles="false" showHelpText="true" displayHelpTextAsStaticText="true"
+                                                helpTextManyLines="['Please upload ONE of the following, preferably Item 1):',
+                  '1) Bank statement DATED within the last 3 months, with masked content where only Bank Account NAME (= Company legal name) and Bank Account NUMBER are shown',
+                  '2) Online bank account snapshot where only Bank Account NAME (= Company legal name) and Bank Account NUMBER are shown',
+                  '3) [For China only – If either 1) or 2) is unavailable] New bank account opening certificate aka “开☐☐可☐” (e.g. Bank opening permit)']"/>
+                        </lightning:layoutItem>
+                    </aura:if>
+                    <aura:if isTrue="{!v.numberOfBankDetails == '3'}">
+                        <p class="slds-p-top_large slds-p-bottom_small slds-text-heading_small">3rd Bank Account
+                            Information</p>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_Name__c"
+                                                               labelField="Bank Name"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_Account_Type__c"
+                                                               labelField="Bank Account Type"
+                                                               isRequired="true" parent="{!this}"/>
+                        <aura:if isTrue="{!v.displayPersonalBankDetailsSection3 == 'Personal'}">
+                            <c:BackgroundProfileCreateActionFields
+                                    apiNameField="Bank_3_Personal_Bank_Details__c"
+                                    labelField="If you cannot provide a Corporate Bank Account, please provide your personal bank details and an explanation as to why you cannot provide a Corporate Bank Account"
+                                    isRequired="true"/>
+                        </aura:if>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_Account_Holder_Name__c"
+                                                               labelField="Name of Bank Account Holder"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_Account_Branch_Name__c"
+                                                               labelField="Bank Branch Name" isRequired="true"/>
+                        <lightning:layoutItem size="12">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">Bank Address</label>
+                                <div class="slds-form-element__control">
+                                    <c:BackgroundProfileCreateActionFields
+                                            apiNameField="Bank_3_Address_line_1__c"
+                                            labelField="Bank address (line 1)"
+                                            isRequired="true"/>
+                                    <c:BackgroundProfileCreateActionFields
+                                            apiNameField="Bank_3_Address_line_2__c"
+                                            labelField="Bank address (line 2)"/>
+                                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_City__c"
+                                                                           labelField="Bank City"
+                                                                           isRequired="true"/>
+                                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_Postcode__c"
+                                                                           labelField="Bank Postalcode"
+                                                                           isRequired="true"/>
+                                    <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_Country__c"
+                                                                           labelField="Bank Country"
+                                                                           isRequired="true"/>
+                                </div>
+                            </div>
+                        </lightning:layoutItem>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_Account_Name__c"
+                                                               labelField="Bank Account Name"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_Account_Number__c"
+                                                               labelField="Bank Account Number"
+                                                               isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_Sort_Code__c"
+                                                               labelField="Bank Sort Code" isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_Swift_Code__c"
+                                                               labelField="Bank SWIFT Code" isRequired="true"/>
+                        <c:BackgroundProfileCreateActionFields apiNameField="Bank_3_IBAN_Code__c"
+                                                               labelField="Bank IBAN Code" isRequired="true"/>
+                        <lightning:layoutItem size="12">
+                            <c:FormFileUploader aura:id="fileUploaderId" label="Bank Statement Document "
+                                                multipleFiles="false" showHelpText="true" displayHelpTextAsStaticText="true"
+                                                helpTextManyLines="['Please upload ONE of the following, preferably Item 1):',
+                  '1) Bank statement DATED within the last 3 months, with masked content where only Bank Account NAME (= Company legal name) and Bank Account NUMBER are shown',
+                  '2) Online bank account snapshot where only Bank Account NAME (= Company legal name) and Bank Account NUMBER are shown',
+                  '3) [For China only – If either 1) or 2) is unavailable] New bank account opening certificate aka “开☐☐可☐” (e.g. Bank opening permit)']"/>
+                        </lightning:layoutItem>
+                    </aura:if>
+                </lightning:layout>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" class="slds-m-around_large">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_large">Professional References</div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-body_regular">As we ask of all potential partners, please kindly
+                            provide
+                            2 references you would like to nominate from NARIC recognised institutions that you have
+                            already recruited students for.
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_large">First Referee</div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Referee_1_Full_Name__c"
+                                                           labelField="Name of 1st referee"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Referee_1_Name_of_Institution__c"
+                                                           labelField="Name of institution"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Referee_1_Position__c"
+                                                           labelField="Job title"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Referee_1_Phone_Number__c"
+                                                           labelField="Phone number"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Referee_1_Email__c"
+                                                           labelField="Email address"/>
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_large">Second Referee</div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Referee_2_Full_Name__c"
+                                                           labelField=" Name of 2nd referee"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Referee_2_Name_of_Institution__c"
+                                                           labelField="Name of institution"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Referee_2_Position__c"
+                                                           labelField="Job title"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Referee_2_Phone_Number__c"
+                                                           labelField="Phone number"/>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Referee_2_Email__c"
+                                                           labelField="Email address"/>
+                </lightning:layout>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" class="slds-m-around_large">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12">
+                        <div class="slds-text-heading_large">How did you hear about us?</div>
+                    </lightning:layoutItem>
+                    <c:BackgroundProfileCreateActionFields apiNameField="How_did_you_hear_about_DBS__c"
+                                                           labelField="How did you hear about Dublin Business School (DBS)?"
+                                                           isRequired="true" parent="{!this}"/>
+                    <aura:if isTrue="{!v.displayHowDidYouHearAboutDbsAdditionalField}">
+                        <c:BackgroundProfileCreateActionFields apiNameField="How_did_you_hear_about_DBS_Other__c"
+                                                               labelField="Please specify"/>
+                    </aura:if>
+                    <c:BackgroundProfileCreateActionFields apiNameField="Declaration__c"
+                                                           labelField="I declare the above information is true and accurate to the best of my knowledge at the time of submission. I understand that Dublin Business School (DBS) will rely on the above information in determining whether to enter into any contractual agreement or other arrangement with me/my company, and that any false or misleading information provided would be grounds for the immediate termination of any such contractual agreement or other arrangement. I understand the requirements of applicable anti-bribery laws and DBS’s prohibition on all forms of corruption, and certify that neither I nor/my company have taken, or will take, any action in connection with the proposed relationship with DBS that would violate any such law or prohibition. I authorise DBS and its employees or contractors to contact the references provided in order to complete the due diligence process."
+                                                           isRequired="true" parent="{!this}"/>
+                </lightning:layout>
+            </lightning:layoutItem>
+
+            <div class="slds-text-align_center">
+                <lightning:button disabled="{!v.disableSubmitButton}" class="slds-m-top_small" type="submit"
+                                  variant="brand" label="Submit"/>
+            </div>
+
+        </lightning:recordEditForm>
+
+    </aura:if>
+    <aura:if isTrue="{!v.isSuccess}">
+        <lightning:layout multipleRows="true">
+            <lightning:layoutItem size="12" class="slds-text-align_center">
+                Thank you for completing the questionnaire. 
+                You will shortly receive a link via e-mail to review and sign on the summary document.  
+                (If you provided another member's mobile phone number (director/owner/legal representative OR another employee), please inform them that they will receive this e-mail too as we need 2 signatures from you unless you're a sole proprietor or director/owner with one member only company.)
+                Once we have received completely signed summary document from you, our team will proceed your application further and get in touch with you. 
+                Many thanks. 
+
+                Kind regards, 
+                DBS team
+            </lightning:layoutItem>
+        </lightning:layout>
+    </aura:if>
+    <aura:if isTrue="{!v.isError}">
+        <lightning:layout multipleRows="true">
+            <lightning:layoutItem size="12" class="slds-text-align_center">
+                {!v.message}
+            </lightning:layoutItem>
+        </lightning:layout>
+    </aura:if>
+</aura:component>

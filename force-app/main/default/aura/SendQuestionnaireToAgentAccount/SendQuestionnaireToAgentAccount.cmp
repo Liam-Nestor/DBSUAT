@@ -1,0 +1,60 @@
+<aura:component description="SendQuestionnaireToAgent"
+                implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes"
+                controller="SendQuestionnaireToAccountController">
+
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="false"/>
+    <aura:attribute name="message" type="String"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+
+        .slds-modal__content{
+        overflow-y: hidden !important;
+        height: unset !important;
+        max-height: unset !important;
+        }
+    </aura:html>
+
+    <lightning:layout multipleRows="true" class="slds-is-relative">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner variant="brand"/>
+        </aura:if>
+
+
+        <lightning:layoutItem class="modal-header slds-modal__header" size="12">
+            <h2 id="modal-heading-01"
+                class="slds-text-heading_medium slds-hyphenate slds-text-align_center">
+                {!$Label.c.Questionnaire_Quick_Action_Header}
+            </h2>
+        </lightning:layoutItem>
+
+        <lightning:layoutItem class="slds-modal__content slds-p-around_xx-small slds-is-relative" size="12">
+            <lightning:layoutItem size="12">
+                <div class="slds-grid slds-wrap slds-p-around_small">
+                    <div class="slds-col slds-size_1-of-1">
+                        <lightning:input aura:id="agentName" required="true" maxlength="255" type="text" label="Name of the Agent"/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1">
+                        <lightning:input aura:id="agentEmail" required="true" maxlength="255" type="email" label="Email of the Agent"/>
+                    </div>
+                </div>
+            </lightning:layoutItem>
+        </lightning:layoutItem>
+
+        <lightning:layoutItem class="modal-footer slds-modal__footer slds-is-relative" size="12">
+            <lightning:button label="{!$Label.c.Cancel_Button}" onclick="{!c.hideDialog}"/>
+            <lightning:button label="{!$Label.c.Confirm_Button}" onclick="{!c.save}" variant="brand"/>
+        </lightning:layoutItem>
+
+    </lightning:layout>
+
+</aura:component>

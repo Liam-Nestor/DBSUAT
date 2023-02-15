@@ -1,0 +1,33 @@
+<aura:component description="FormFileUploader">
+
+    <aura:attribute name="label" type="String"/>
+    <aura:attribute name="fileName" type="String" default="No File Selected.."/>
+    <aura:attribute name="fileContent" type="String"/>
+    <aura:attribute name="showHelpText" type="Boolean" default="false"/>
+    <aura:attribute name="helpText" type="String"/>
+    <aura:attribute name="multipleFiles" type="Boolean" default="false"/>
+    <aura:attribute name="displayHelpTextAsStaticText" type="Boolean" default="false"/>
+    <aura:attribute name="helpTextManyLines" type="List"/>
+
+    <lightning:layoutItem size="12">
+        <div class="slds-form-element">
+            <label class="slds-form-element__label">
+                {!v.label}
+                <aura:if isTrue="{!and(v.showHelpText, !v.displayHelpTextAsStaticText)}">
+                    <lightning:helptext content="{!v.helpText}"/>
+                </aura:if>
+            </label>
+            <div class="slds-form-element__control">
+                <aura:if isTrue="{!and(v.showHelpText, v.displayHelpTextAsStaticText)}">
+                    <aura:iteration var="singleHelpMessage" items="{!v.helpTextManyLines}">
+                        <p class="slds-p-left_small slds-text-body_small">{!singleHelpMessage}</p>
+                    </aura:iteration>
+                </aura:if>
+                <lightning:input aura:id="fileId" onchange="{!c.handleFilesChange}" type="file" name="file" label="{!v.label}"
+                                 multiple="{!v.multipleFiles}" required="true" variant="label-hidden"/>
+            </div>
+        </div>
+        <div class="slds-text-body_medium">{!v.fileName} </div>
+    </lightning:layoutItem>
+
+</aura:component>

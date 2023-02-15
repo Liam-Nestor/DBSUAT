@@ -1,0 +1,38 @@
+<aura:component description="BackgroundProfileCreateActionFields">
+
+    <aura:attribute name="labelField" type="String" required="true"/>
+    <aura:attribute name="isRequired" type="Boolean" default="false"/>
+    <aura:attribute name="apiNameField" type="String" required="true"/>
+    <aura:attribute name="showHelpText" type="Boolean" default="false"/>
+    <aura:attribute name="helpText" type="String"/>
+    <aura:attribute name="displayHelpTextAsStaticText" type="Boolean" default="false"/>
+    <aura:attribute name="helpTextManyLines" type="List"/>
+    <aura:attribute name="parent" type="Aura.Component"/>
+
+    <lightning:layoutItem size="12">
+        <div class="slds-form-element">
+            <label class="slds-form-element__label">
+                {!v.labelField}
+                <aura:if isTrue="{!v.isRequired}"> 
+                    <abbr class="slds-required" title="required"> *</abbr>
+                </aura:if>
+                <aura:if isTrue="{!and(v.showHelpText, !v.displayHelpTextAsStaticText)}">
+                    <lightning:helptext content="{!v.helpText}"/>
+                </aura:if>
+            </label>
+            <div class="slds-form-element__control">
+                <aura:if isTrue="{!and(v.showHelpText, v.displayHelpTextAsStaticText)}">
+                    <aura:iteration var="singleHelpMessage" items="{!v.helpTextManyLines}">
+                        <p class="slds-p-left_small slds-text-body_small">{!singleHelpMessage}</p>
+                    </aura:iteration>
+                </aura:if>
+                <aura:if isTrue="{!v.isRequired}"> 
+                    <lightning:inputField fieldName="{!v.apiNameField}" variant="label-hidden" onchange="{!c.onChangeHandler}" required="true"/>
+                    <aura:set attribute="else">
+                        <lightning:inputField fieldName="{!v.apiNameField}" variant="label-hidden" onchange="{!c.onChangeHandler}"/>
+                    </aura:set>
+                </aura:if>
+            </div> 
+        </div>
+    </lightning:layoutItem>
+</aura:component>

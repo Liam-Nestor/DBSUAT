@@ -1,0 +1,53 @@
+<aura:component description="SendQuestionnaireToAgent"
+                implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes"
+                controller="SendQuestionnaireToAgentController">
+
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="false"/>
+    <aura:attribute name="message" type="String"/>
+    <aura:attribute name="showConfirmButton" type="Boolean" default="false"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+
+        .slds-modal__content{
+        overflow-y: hidden !important;
+        height: unset !important;
+        max-height: unset !important;
+        }
+    </aura:html>
+
+    <lightning:layout multipleRows="true" class="slds-is-relative">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner variant="brand"/>
+        </aura:if>
+
+
+        <lightning:layoutItem class="modal-header slds-modal__header" size="12">
+            <h2 id="modal-heading-01"
+                class="slds-text-heading_medium slds-hyphenate slds-text-align_center">
+                {!$Label.c.Questionnaire_Quick_Action_Header}
+            </h2>
+        </lightning:layoutItem>
+        <lightning:layoutItem class="slds-modal__content slds-p-around_xx-small slds-is-relative" size="12">
+            <lightning:layoutItem class="slds-align_absolute-center slds-text-align_center slds-p-around_small slds-text-heading_medium" size="12">
+                {!v.message}
+            </lightning:layoutItem>
+        </lightning:layoutItem> 
+        <lightning:layoutItem class="modal-footer slds-modal__footer slds-is-relative" size="12">
+            <lightning:button label="{!$Label.c.Cancel_Button}" onclick="{!c.hideDialog}"/>
+            <aura:if isTrue="{!v.showConfirmButton}">
+                <lightning:button label="{!$Label.c.Confirm_Button}" onclick="{!c.save}" variant="brand"/>
+            </aura:if>
+        </lightning:layoutItem>
+
+    </lightning:layout>
+</aura:component>

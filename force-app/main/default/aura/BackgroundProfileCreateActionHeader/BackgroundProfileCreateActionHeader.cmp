@@ -1,0 +1,17 @@
+<aura:component description="BackgroundProfileCreateActionHeader"
+				implements="forceCommunity:availableForAllPageTypes"
+				access="global">
+
+	<div class="slds-grid slds-text-align_center">
+        <div class="slds-col slds-size_4-of-12">
+            <img src="{!$Resource.DBS_Logo}"/>
+        </div>
+        <div class="slds-col slds-size_8-of-12" style="margin:auto;">
+            <div style="font-size: 30px;font-weight: 700;color: #01d1ff;">
+                Dublin Business School – Agent Questionnaire (Background Profile)
+            </div>
+        </div>
+    </div>
+
+
+</aura:component>

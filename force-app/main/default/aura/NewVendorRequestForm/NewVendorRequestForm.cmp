@@ -1,0 +1,99 @@
+<aura:component description="NewVendorRequestForm"
+                implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes"
+                controller="NewVendorRequestFormController">
+
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="showSpinner" type="Boolean"/>
+    <aura:attribute name="twoSigns" type="Boolean"/>
+    <aura:attribute name="currentTitleOfFirstRecipient" type="String"/>
+    <aura:attribute name="currentNameOfFirstRecipient" type="String"/>
+    <aura:attribute name="currentEmailOfFirstRecipient" type="String"/>
+    <aura:attribute name="currentTitleOfCeoRecipient" type="String"/>
+    <aura:attribute name="currentNumberOfBankAccounts" type="String"/>
+    <aura:attribute name="currentNameOfCeoRecipient" type="String"/>
+    <aura:attribute name="currentEmailOfCeoRecipient" type="String"/>
+    <aura:attribute name="typeOfBusiness" type="String"/>
+    <aura:attribute name="areYou" type="String"/>
+    <aura:attribute name="titlePicklist" type="object[]"/>
+    <aura:attribute name="bankPicklist" type="object[]"/>
+    <aura:attribute name="mostRecentlyRecord" type="Background_Profile__c"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+ 
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+
+        .slds-modal__content{
+        overflow-y: hidden !important;
+        height: unset !important;
+        max-height: unset !important;
+        }
+    </aura:html>
+
+    <lightning:layout multipleRows="true" class="slds-is-relative">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner variant="brand"/>
+        </aura:if>
+
+        <lightning:layoutItem class="modal-header slds-modal__header" size="12">
+            <h2 id="modal-heading-01"
+                class="slds-text-heading_medium slds-hyphenate slds-text-align_center">
+                Send Request Form 
+            </h2>
+        </lightning:layoutItem>
+        <lightning:layoutItem class="slds-modal__content slds-p-around_xx-small slds-is-relative" size="12">
+            <lightning:layoutItem size="12">
+                <aura:if isTrue="{!v.mostRecentlyRecord != null}">
+                    <p class="slds-align_absolute-center slds-text-align_center slds-p-around_small">This action is allowed for most recently Background Profile : <a onclick="{!c.navigateToMostRecentlyRecord}"> {!v.mostRecentlyRecord.Name} </a></p>
+                    <aura:set attribute="else">
+                        <div class="slds-grid slds-wrap slds-p-around_small">
+                            <aura:if isTrue="{!v.twoSigns}">
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:input aura:id="fieldId" required="true" maxlength="255" type="text" label="Title of the Agent" value="{!v.currentTitleOfFirstRecipient}"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:input aura:id="fieldId" required="true" maxlength="255" type="text" label="Name of the Agent" value="{!v.currentNameOfFirstRecipient}"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:input aura:id="fieldId" required="true" maxlength="255" type="email" label="Email of the Agent" value="{!v.currentEmailOfFirstRecipient}"/>
+                                </div>
+                            </aura:if>
+                            <div class="slds-col slds-size_1-of-1"> 
+                                <lightning:select aura:id="fieldId" label="Title of the Director/Owner/Legal Rep.(Please do not amend unless this info has been changed.)" value="{!v.currentTitleOfCeoRecipient}" required="true">
+                                    <aura:iteration items="{!v.titlePicklist}" var="singleTitle">  
+                                        <option value="{!singleTitle.valueTitle}" label="{!singleTitle.labelTitle}" selected="{!singleTitle.valueTitle == v.currentTitleOfCeoRecipient}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1">
+                                <lightning:input aura:id="fieldId" required="true" maxlength="255" type="text" label="Name of the Director/Owner/Legal Rep.(Please do not amend unless this info has been changed.)" value="{!v.currentNameOfCeoRecipient}"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1">
+                                <lightning:input aura:id="fieldId" required="true" maxlength="255" type="email" label="Email of the Director/Owner/Legal Rep.(Please do not amend unless this info has been changed.)" value="{!v.currentEmailOfCeoRecipient}"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1"> 
+                                <lightning:select aura:id="fieldId" label="Number of Bank Accounts (Please do not amend unless this info has been changed.)" value="{!v.currentNumberOfBankAccounts}" required="true">
+                                    <aura:iteration items="{!v.bankPicklist}" var="singleTitle">  
+                                        <option value="{!singleTitle.valueTitle}" label="{!singleTitle.labelTitle}" selected="{!singleTitle.valueTitle == v.currentNumberOfBankAccounts}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </lightning:layoutItem>
+        </lightning:layoutItem>
+        <lightning:layoutItem class="modal-footer slds-modal__footer slds-is-relative" size="12">
+            <lightning:button label="{!$Label.c.Cancel_Button}" onclick="{!c.hideDialog}"/>
+            <lightning:button label="{!$Label.c.Confirm_Button}" onclick="{!c.save}" variant="brand"/>
+        </lightning:layoutItem>
+
+    </lightning:layout>
+
+</aura:component>
